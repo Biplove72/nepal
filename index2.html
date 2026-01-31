@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8" />
+<title>Three.js Image Click Message</title>
+
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+  }
+
+  #overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .msg {
+    position: absolute;
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+    background: rgba(0,0,0,0.6);
+    padding: 8px 14px;
+    border-radius: 8px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    white-space: pre-line;
+  }
+</style>
+</head>
+
+<body>
+
+<div id="overlay"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+
+<script>
+/* =====================
+   THREE SETUP
+===================== */
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(
+  60,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+camera.position.z = 5;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+/* =====================
+   IMAGE PLANE (ALWAYS VISIBLE)
+===================== */
+const loader = new THREE.TextureLoader();
+const imagePlane = new THREE.Mesh(
+  new THREE.PlaneGeometry(3, 3),
+  new THREE.MeshBasicMaterial({
+    map: loader.load("images.jpg"),
+    transparent: true
+  })
+);
+scene.add(imagePlane);
+
+/* =====================
+   RAYCASTER
+===================== */
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+/* =====================
+   MESSAGES
+===================== */
+const messages = [
+  "विकास",
+  "समृद्धि",
+  "फागुन २१ मा\nसूर्य चिन्हमा मतदान"
+];
+let clickCount = 0;
+
+const overlay = document.getElementById("overlay");
+
+/* =====================
+   CLICK EVENT
+===================== */
+window.addEventListener("click", (event) => {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const hit = raycaster.intersectObject(imagePlane);
+
+  if (hit.length) showMessages();
+});
+
+/* =====================
+   SHOW TEXT AROUND IMAGE
+===================== */
+function showMessages() {
+  const text = messages[clickCount];
+
+  const positions = [
+    { top: "22%", left: "50%" }, // top
+    { top: "50%", left: "18%" }, // left
+    { top: "50%", left: "82%" }, // right
+    { top: "78%", left: "50%" }  // bottom
+  ];
+
+  positions.forEach(p => {
+    const el = document.createElement("div");
+    el.className = "msg";
+    el.innerText = text;
+    el.style.top = p.top;
+    el.style.left = p.left;
+    el.style.transform = "translate(-50%, -50%)";
+
+    overlay.appendChild(el);
+
+    requestAnimationFrame(() => el.style.opacity = 1);
+
+    setTimeout(() => {
+      el.style.opacity = 0;
+      setTimeout(() => el.remove(), 500);
+    }, 2000);
+  });
+
+  clickCount = (clickCount + 1) % messages.length;
+}
+
+/* =====================
+   RENDER LOOP
+===================== */
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+animate();
+
+/* =====================
+   RESIZE
+===================== */
+window.addEventListener("resize", () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+
+</body>
+</html>
