@@ -17,7 +17,7 @@
     pointer-events: none;
   }
 
-  .msg {
+  /* .msg {
     position: absolute;
     color: #fff;
     font-size: 22px;
@@ -28,7 +28,49 @@
     opacity: 0;
     transition: opacity 0.5s ease;
     white-space: pre-line;
+  } */
+
+   .msg {
+  position: absolute;
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+  background: rgba(0,0,0,0.6);
+  padding: 10px 16px;
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  white-space: pre-line;
+
+  /* 🔥 GLOW EFFECT */
+  text-shadow:
+    0 0 5px #ffd700,
+    0 0 10px #ffd700,
+    0 0 20px #ffae00,
+    0 0 40px #ff8800;
+
+  box-shadow:
+    0 0 10px rgba(255, 200, 0, 0.6),
+    0 0 20px rgba(255, 160, 0, 0.6);
+
+  animation: glowPulse 1.2s infinite alternate;
+}
+
+/* Glow animation */
+@keyframes glowPulse {
+  from {
+    text-shadow:
+      0 0 5px #ffd700,
+      0 0 10px #ffb700;
   }
+  to {
+    text-shadow:
+      0 0 15px #fff176,
+      0 0 30px #ff9800,
+      0 0 60px #ff6f00;
+  }
+}
+
 </style>
 </head>
 
@@ -81,6 +123,7 @@ const mouse = new THREE.Vector2();
 const messages = [
   "विकास",
   "समृद्धि",
+  "शुसासन",
   "फागुन २१ मा\nसूर्य चिन्हमा मतदान"
 ];
 let clickCount = 0;
