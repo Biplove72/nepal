@@ -2,7 +2,7 @@
 <html lang="ne">
 <head>
 <meta charset="UTF-8" />
-<title>Three.js Click Game</title>
+<title>एमाले Game</title>
 
 <style>
 body {
@@ -91,7 +91,7 @@ body {
 /* =====================
    PLAYER SETUP
 ===================== */
-let playerName = prompt("Enter your name") || "Guest";
+let playerName = prompt("Enter your name(आफ्नो नाम लेखनुहोस ।)") || "Guest";
 let score = 0;
 
 /* =====================
@@ -113,16 +113,34 @@ document.body.appendChild(renderer.domElement);
 
 /* =====================
    IMAGE
+=/* =====================
+   IMAGE (ROUND & STABLE)
 ===================== */
 const loader = new THREE.TextureLoader();
+const texture = loader.load("images.jpg");
+
 const imagePlane = new THREE.Mesh(
-  new THREE.PlaneGeometry(3, 3),
+  new THREE.CircleGeometry(1.5, 64), // 🔵 round shape
   new THREE.MeshBasicMaterial({
-    map: loader.load("images.jpg"),
+    map: texture,
     transparent: true
   })
 );
+
+// keep image stable at center
+imagePlane.position.set(0, 0, 0);
+
 scene.add(imagePlane);
+function animate() {
+  requestAnimationFrame(animate);
+
+  // 🔄 slow auto rotation
+  imagePlane.rotation.z += 0.005;
+
+  renderer.render(scene, camera);
+}
+
+
 
 /* =====================
    RAYCASTER
@@ -214,6 +232,7 @@ function saveScore() {
   localStorage.setItem("gameScores", JSON.stringify(data));
 }
 
+
 /* =====================
    LEADERBOARD
 ===================== */
@@ -235,9 +254,14 @@ renderLeaderboard();
 ===================== */
 function animate() {
   requestAnimationFrame(animate);
+
+  // 🔄 AUTO ROTATION HERE
+  imagePlane.rotation.z += 0.005;
+
   renderer.render(scene, camera);
 }
 animate();
+
 
 /* =====================
    RESIZE
